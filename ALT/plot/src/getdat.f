@@ -278,7 +278,7 @@ c
         write(lp,'(a)')       cline(1:len_trim(cline))
         i = index(cline,'=')
         read (cline(i+1:),*)  nstep,time(3),layer,thet,hminb,hmaxb
-        call getfld(  work, ni, hminb,hmaxb, .false.,lrange)
+        call getfld(  work, ni, hminb,hmaxb, .false.,lrange)  !surflx or oneta
       endif
       if     (cline(1:8).ne.'oneta   ') then
         oneta(:,:) = 1.0
@@ -290,8 +290,17 @@ c
         write(lp,'(a)')       cline(1:len_trim(cline))
         i = index(cline,'=')
         read (cline(i+1:),*)  nstep,time(3),layer,thet,hminb,hmaxb
-        call getfld(  work, ni, hminb,hmaxb, .false.,lrange)
-      endif
+        call getfld(  work, ni, hminb,hmaxb, .false.,lrange)  !surflx or mnoneta
+        if     (cline(1:8).eq.'mnoneta ') then
+c ---     discard mn oneta
+          write(lp,'("skip   ",a)') cline(1:8)
+          read (ni,'(a)',end=6) cline
+          write(lp,'(a)')       cline(1:len_trim(cline))
+          i = index(cline,'=')
+          read (cline(i+1:),*)  nstep,time(3),layer,thet,hminb,hmaxb
+          call getfld(  work, ni, hminb,hmaxb, .false.,lrange)  !surflx
+        endif !mnoneta
+      endif !oneta
       call extrct_p(work,idm,jdm,iorign,jorign, 
      &              surflx,ii,jj)
       write(lp,'("input  ",a," into ",a)') cline(1:8),'surflx  '
@@ -557,7 +566,7 @@ c
         do j= 1,jj
           do i= 1,ii
             if     (saln(i,j,2*k).lt.2.0**99) then
-              wtrflx(i,j) = salflx(i,j)/max(saln(i,j,2*k),0.001)
+              wtrflx(i,j) = -salflx(i,j)/max(saln(i,j,2*k),0.001)
             endif
           enddo
         enddo
@@ -602,7 +611,7 @@ c
             call flush(lp)
             theta(k)=thet
             goto 114  ! archive containing only 1 layer
-          elseif (cline(1:8).ne.'tracer  ' .and.
+          elseif (cline(1:6).ne.'tracer'   .and.  !tracer01,...
      &            cline(1:8).ne.'q2      ' .and.
      &            cline(1:8).ne.'q2l     ' .and.
      &            cline(1:8).ne.'viscty  ' .and.
@@ -661,7 +670,7 @@ c
           if     (ktr.le.ntracr) then
             call extrct_p(work,idm,jdm,iorign,jorign, 
      &                    trcr(1,1,2*k,ktr),ii,jj)
-            if     (cline(1:8).ne.'tracer  ') then !visc/diff
+            if     (cline(1:6).ne.'tracer') then !visc/diff
               do j= 1,jj
                 do i= 1,ii
                   if     (trcr(i,j,2*k,ktr).lt.2.0**99) then
@@ -1183,7 +1192,7 @@ c
         do j= 1,jj
           do i= 1,ii
             if     (saln(i,j,2*k).lt.2.0**99) then
-              wtrflx(i,j) = salflx(i,j)/max(saln(i,j,2*k),0.001)
+              wtrflx(i,j) = -salflx(i,j)/max(saln(i,j,2*k),0.001)
             endif
           enddo
         enddo

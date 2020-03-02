@@ -44,7 +44,7 @@ case 'XC30':
 #       compile for XC30/XC40 with ifort via aprun
         module switch PrgEnv-cray PrgEnv-intel
         setenv FC       "ftn"
-        setenv FFLAGS   "-traceback -xHost -O3 -fp-model precise -ftz -align array64 byte -convert big_endian -warn nogeneral -diag-disable 10212"
+        setenv FFLAGS   "-traceback -xHost -O3 -fp-model precise -ftz -align array64byte -convert big_endian -warn nogeneral -diag-disable 10212"
         setenv FLIBS    ""
         setenv CC       "cc"
         setenv CFLAGS   "-traceback -xHost -O"
@@ -80,9 +80,7 @@ end
 #
 # --- *.f programs
 #
-foreach f ( atmos_gaussian clim_stat wind_stat wind_stat_check \
-            wind_stat_range wind_stat_range2 wind_stat_range5 \
-            wind_stat_raw wind_to_cd hycom_sigma )
+foreach f ( atmos_gaussian wind_to_cd hycom_sigma )
   if ( ! -e ${f}_${OS} ) then
     $FC $FFLAGS ${f}.f $FLIBS -o ${f}_${OS}
   else if ( -f `find ${f}.f -prune -newer ${f}_${OS}` ) then
@@ -90,6 +88,25 @@ foreach f ( atmos_gaussian clim_stat wind_stat wind_stat_check \
   else
     echo "${f}_${OS} is already up to date"
   endif
+  touch       ${f}
+  /bin/rm -f  ${f}
+  chmod a+rx  ${f}_${OS}
+  /bin/ln -s  ${f}_${OS} ${f}
+end
+foreach f ( clim_stat wind_stat wind_stat_check \
+            wind_stat_range wind_stat_range2 wind_stat_range4 wind_stat_range5 \
+            wind_stat_raw )
+  if ( ! -e ${f}_${OS} ) then
+    $FC $FFLAGS ${f}.f $FLIBS -o ${f}_${OS}
+  else if ( -f `find ${f}.f -prune -newer ${f}_${OS}` ) then
+    $FC $FFLAGS ${f}.f $FLIBS -o ${f}_${OS}
+  else
+    echo "${f}_${OS} is already up to date"
+  endif
+  touch       ${f}.exe
+  /bin/rm -f  ${f}.exe
+  chmod a+rx  ${f}_${OS}
+  /bin/ln -s  ${f}_${OS} ${f}.exe
 end
 foreach f ( cice_restart cice_restart_mask cice_restart_range cice_restart_superset \
             cice_stat cice_wind_ymdh cice_x1 hycom_palette lonlat_dist \
@@ -102,7 +119,7 @@ foreach f ( cice_restart cice_restart_mask cice_restart_range cice_restart_super
             hycom_sigma hycom_river_anom hycom_ts hycom_wind_date \
             hycom_wind_ymdh hycom_ymdh_wind hycom_yoflat \
             rhos_to_t sigma0_to_sigma2 sigma2_to_sigma0 ts_to_sigma z2zi zi2z \
-            hycom_date_wind hycom_profile2plm hycom_record_size \
+            hycom_date_wind hycom_month_day hycom_profile2plm hycom_record_size \
             hycom_subset_xy hycom_dp0k hycom_dp0k_cm hycom_dp0k_sigma \
             hycom_tideport_diff hycom_tideport_scale )
   if ( ! -e ${f}_${OS} ) then
@@ -187,7 +204,7 @@ $FC $FFLAGS -c hycom_profile_lib.F
 #
 foreach f ( hycom_profile_list hycom_profile_argo hycom_profile_isop hycom_profile_newsig \
             hycom_profile_obs hycom_profile_offset hycom_profile_stericsshanom \
-            hycom_profile_stokes )
+            hycom_profile_stokes hycom_bad_velocity )
   if ( ! -e ${f}_${OS} ) then
     $FC $FFLAGS ${f}.F $FLIBS hycom_profile_lib.o hycom_endian_io.o parse.o -o ${f}_${OS}
   else if ( -f `find ${f}.F -prune -newer ${f}_${OS}` ) then

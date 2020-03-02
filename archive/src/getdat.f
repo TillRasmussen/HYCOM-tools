@@ -702,7 +702,7 @@ c
         do j= 1,jj
           do i= 1,ii
             if     (saln(i,j,k).lt.2.0**99) then
-              wtrflx(i,j) = salflx(i,j)/max(saln(i,j,k),0.001)
+              wtrflx(i,j) = -salflx(i,j)/max(saln(i,j,k),0.001)
             endif
           enddo
         enddo
@@ -737,6 +737,7 @@ c
       endif !.not.nodens:else
 c
 c --- tracers and visc/diff, may be more in archive than processed.
+c --- tracers can be labeled 'tracer  ' or 'tracer01','tracer02',...
 c
       if     (k.eq.1) then
         do ktr= 1,999
@@ -747,7 +748,7 @@ c
             call flush(lp)
             theta(k)=thet
             goto 114  ! archive containing only 1 layer
-          elseif (cline(1:8).ne.'tracer  ' .and.
+          elseif (cline(1:6).ne.'tracer'   .and.
      &            cline(1:8).ne.'viscty  ' .and.
      &            cline(1:8).ne.'t-diff  ' .and.
      &            cline(1:8).ne.'s-diff  '      ) then
@@ -761,7 +762,7 @@ c
      &                      trcr(1,1,k,ktr),ii,jj)
               write(lp,'("input  ",a," into ",a,2i3)')
      &          cline(1:8),'trcr    ',k,ktr
-              if     (cline(1:8).eq.'tracer  ') then
+              if     (cline(1:6).eq.'tracer') then
                 itrcr_type = 0
               elseif (cline(1:8).eq.'viscty  ') then
                 itrcr_type = 1
@@ -1953,7 +1954,7 @@ c
             call flush(lp)
             theta(k)=thet
             goto 114  ! archive containing only 1 layer
-          elseif (cline(1:8).ne.'tracer  ' .and.
+          elseif (cline(1:6).ne.'tracer'   .and.
      &            cline(1:8).ne.'viscty  ' .and.
      &            cline(1:8).ne.'t-diff  ' .and.
      &            cline(1:8).ne.'s-diff  '      ) then

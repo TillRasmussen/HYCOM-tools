@@ -82,7 +82,7 @@ C                   =3-4; 9-term
 C                   =5-6; 17-term
 C                   =7-8; 12-term
 C                   =odd;  sigma-0
-C                   =even; sigma-0
+C                   =even; sigma-2
 C        INTERP - INTERPOLATION FLAG.
 C                   =0; PIECEWISE LINEAR
 C                   =1; CUBIC SPLINE (DEFAULT)
@@ -316,7 +316,7 @@ C
       call ncheck(nf90_get_var(  ncFIDt,        ncVIDt,ZLEV(:)))
       ! inquire variable ID
       call ncheck(nf90_inq_varid(ncFIDt,
-     &                           'TEMP',
+     &                           'PTEMP',
      &                           ncVIDt))
 C
       CALL GETENV('CDF_SALN',CFILES)

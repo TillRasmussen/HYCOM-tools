@@ -8,15 +8,28 @@ set echo
 /bin/rm -f *.mod
 /bin/rm -f *.inc
 #
+foreach OS ( .exe _LinuxGF _LinuxIF _LinuxPGF _XC30 _AIX )
+#start OS
+foreach f ( clim_stat wind_stat wind_stat_check \
+            wind_stat_range wind_stat_range2 wind_stat_range4 wind_stat_range5 \
+            wind_stat_raw )
+  touch       ${f}${OS}
+  /bin/rm -f  ${f}${OS}
+end
+foreach f ( wind_stat_nc wind_stat_range_nc )
+  touch       ${f}${OS}
+  /bin/rm -f  ${f}${OS}
+end
+#end OS
+end
+#
 foreach OS ( "" _LinuxGF _LinuxIF _LinuxPGF _XC30 _AIX )
 #start OS
 foreach f ( echo2 endian )
   touch       ${f}${OS}
   /bin/rm -f  ${f}${OS}
 end
-foreach f ( atmos_gaussian clim_stat wind_stat wind_stat_check \
-            wind_stat_range wind_stat_range2 wind_stat_range5 \
-            wind_stat_raw wind_to_cd hycom_sigma )
+foreach f ( atmos_gaussian wind_to_cd hycom_sigma )
   touch       ${f}${OS}
   /bin/rm -f  ${f}${OS}
 end
@@ -31,7 +44,7 @@ foreach f ( cice_restart cice_restart_mask cice_restart_range cice_restart_super
             hycom_sigma hycom_river_anom hycom_ts hycom_wind_date \
             hycom_wind_ymdh hycom_ymdh_wind hycom_yoflat \
             rhos_to_t sigma0_to_sigma2 sigma2_to_sigma0 ts_to_sigma z2zi zi2z \
-            hycom_date_wind hycom_profile2plm hycom_record_size \
+            hycom_date_wind hycom_month_day hycom_profile2plm hycom_record_size \
             hycom_subset_xy hycom_dp0k hycom_dp0k_cm hycom_dp0k_sigma \
             hycom_tideport_diff hycom_tideport_scale )
   touch       ${f}${OS}
@@ -84,10 +97,6 @@ foreach f ( hycom2nc hycom_binning_nc hycom_scrip_nc )
   /bin/rm -f  ${f}${OS}
 end
 foreach f ( hycom_profile2z_nc hycom_profile2s_nc hycom_seaice_nc )
-  touch       ${f}${OS}
-  /bin/rm -f  ${f}${OS}
-end
-foreach f ( wind_stat_nc wind_stat_range_nc )
   touch       ${f}${OS}
   /bin/rm -f  ${f}${OS}
 end

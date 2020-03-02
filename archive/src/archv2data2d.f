@@ -194,6 +194,14 @@ c --- array allocation
 c
       call plot_alloc
 c
+c --- required for native u or v output
+      allocate(   qlon(ii,jj) )
+      allocate(   qlat(ii,jj) )
+      allocate(   ulon(ii,jj) )
+      allocate(   ulat(ii,jj) )
+      allocate(   vlon(ii,jj) )
+      allocate(   vlat(ii,jj) )
+c
       allocate(  uflux(ii,jj) )
       allocate(  vflux(ii,jj) )
       allocate(  strmf(ii,jj) )
@@ -527,11 +535,11 @@ c ---     ke = 0.5*( std(u)**2 + std(v)**2 )
      &                    /spcifh/max(0.1,dpbl(i,j))    ! deg/day
           strend(i,j)=salflx(i,j)*thref*8.64E4
      &                           /max(0.1,dpbl(i,j))    ! psu/day
-          emnp(  i,j)=wtrflx(i,j)                       ! kg/m^2/s
+          emnp(  i,j)=-wtrflx(i,j)                      ! kg/m^2/s into the atmos
         else  ! std.dev, archive
           ttrend(i,j)=flag
           strend(i,j)=flag
-          emnp(  i,j)=wtrflx(i,j)                       ! kg/m^2/s
+          emnp(  i,j)=-wtrflx(i,j)                      ! kg/m^2/s into the atmos
         endif
         if     (covice(i,j).eq.0.0) then
           thkice(i,j)= 0.0
@@ -844,7 +852,7 @@ c ---   'strio ' = surf. saln trend I/O unit (0 no I/O)
       elseif (i.eq.2) then
 c ---   'tbfio ' = temp buoyancy flux I/O unit (0 no I/O)
         if (ioin.gt.0) then
-          call buoflx(util1, ip, surflx,salflx,
+          call buoflx(util1, ip, surflx,wtrflx,
      &                           temp(1,1,1),saln(1,1,1),ii,jj, 1)
           call horout(util1, artype,yrflag,time3,iexpt,.true.,
      &                ' temp. bouy. flux ',         ! plot name
@@ -856,7 +864,7 @@ c ---   'tbfio ' = temp buoyancy flux I/O unit (0 no I/O)
 c ---   'sbfio ' = saln buoyancy flux I/O unit (0 no I/O)
         call blkini(ioin,'sbfio ')
         if (ioin.gt.0) then
-          call buoflx(util1, ip, surflx,salflx,
+          call buoflx(util1, ip, surflx,wtrflx,
      &                           temp(1,1,1),saln(1,1,1),ii,jj, 2)
           call horout(util1, artype,yrflag,time3,iexpt,.true.,
      &                ' saln. bouy. flux ',         ! plot name
@@ -868,7 +876,7 @@ c ---   'sbfio ' = saln buoyancy flux I/O unit (0 no I/O)
 c ---   'abfio ' = tot. buoyancy flux I/O unit (0 no I/O)
         call blkini(ioin,'abfio ')
         if (ioin.gt.0) then
-          call buoflx(util1, ip, surflx,salflx,
+          call buoflx(util1, ip, surflx,wtrflx,
      &                           temp(1,1,1),saln(1,1,1),ii,jj, 3)
           call horout(util1, artype,yrflag,time3,iexpt,.true.,
      &                ' total bouy. flux ',         ! plot name
@@ -1644,7 +1652,7 @@ c ---               Rotate from Xward and Yward to Eastward
      &                'u_barotropic_velocity',      ! ncdf name
      &                ' ',                          ! ncdf standard_name
      &                'm/s',                        ! units
-     &                k,ltheta, frmt,-ioin)
+     &                k,ltheta, frmt,ioin)          ! ioin -ve
         endif !ioin
 c
 c ---   'bvvio ' = baro. v-velocity I/O unit (0 no I/O, -ve on v-grid for NCOM)
@@ -1743,7 +1751,7 @@ c
      &                'v_barotropic_velocity',      ! ncdf name
      &                ' ',                          ! ncdf standard_name
      &                'm/s',                        ! units
-     &                k,ltheta, frmt,-ioin)
+     &                k,ltheta, frmt,ioin)          ! ioin -ve
         endif !ioin
 c
 c ---   'bspio ' = baro. speed I/O unit (0 no I/O)
@@ -2211,14 +2219,14 @@ c ---               Rotate from Xward and Yward to Eastward
      &                'u_baroclinic_velocity',       ! ncdf name
      &                ' ',                           ! ncdf standard_name
      &                'm/s',                         ! units
-     &                kf,kl,ltheta, frmt,-ioin)
+     &                kf,kl,ltheta, frmt,ioin)       ! ioin -ve
           else !total velocity
           call horout_3d(utilk, artype,yrflag,time3,iexpt,.true.,
      &                ' u-veloc.',                   ! plot name
      &                'u_velocity',                  ! ncdf name
      &                ' ',                           ! ncdf standard_name
      &                'm/s',                         ! units
-     &                kf,kl,ltheta, frmt,-ioin)
+     &                kf,kl,ltheta, frmt,ioin)       ! ioin -ve
           endif
         endif
 c
@@ -2322,14 +2330,14 @@ c ---               Rotate from Xward and Yward to Northward
      &                'v_baroclinic_velocity',    ! ncdf name
      &                ' ',                        ! ncdf standard_name
      &                'm/s',                      ! units
-     &                kf,kl,ltheta, frmt,-ioin)
+     &                kf,kl,ltheta, frmt,ioin)    ! ioin -ve
           else !total velocity
           call horout_3d(utilk, artype,yrflag,time3,iexpt,.true.,
      &                ' v-veloc.',                ! plot name
      &                'v_velocity',               ! ncdf name
      &                ' ',                        ! ncdf standard_name
      &                'm/s',                      ! units
-     &                kf,kl,ltheta, frmt,-ioin)
+     &                kf,kl,ltheta, frmt,ioin)    ! ioin -ve
           endif
         endif
 c

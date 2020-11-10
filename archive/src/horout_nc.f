@@ -1571,7 +1571,7 @@ c
      &                                   "UNCLASSIFIED"))
                 call ncheck(nf90_put_att(ncfileID,nf90_global,
      &                                   "distribution_statement",
-     &      "Approved for public release. Distribution unlimited."))
+     &      "Approved for public release; distribution unlimited."))
                 call ncheck(nf90_put_att(ncfileID,nf90_global,
      &                                   "downgrade_date",
      &                                   "not applicable"))
@@ -4257,7 +4257,7 @@ c
      &                                   "UNCLASSIFIED"))
                 call ncheck(nf90_put_att(ncfileID,nf90_global,
      &                                   "distribution_statement",
-     &      "Approved for public release. Distribution unlimited."))
+     &      "Approved for public release; distribution unlimited."))
                 call ncheck(nf90_put_att(ncfileID,nf90_global,
      &                                   "downgrade_date",
      &                                   "not applicable"))
@@ -4637,6 +4637,12 @@ c
               navo_code = 15
               scale_f   = 0.001
               add_off   = 20.0
+            elseif (namec.eq.'water_ptemp') then
+              namecv    = namec
+              namelv    = 'Water Potential Temperature'
+              navo_code = 0
+              scale_f   = 0.001
+              add_off   = 20.0
             elseif (namec.eq.'salinity') then
               namecv    = namec
               namelv    = 'Salinity'
@@ -4875,6 +4881,12 @@ c
               namecv    = namec
               namelv    = 'Water Temperature'
               navo_code = 15
+              scale_f   = 0.001
+              add_off   = 20.0
+            elseif (namec.eq.'water_ptemp') then
+              namecv    = namec
+              namelv    = 'Water Potential Temperature'
+              navo_code = 0
               scale_f   = 0.001
               add_off   = 20.0
             elseif (namec.eq.'salinity') then
